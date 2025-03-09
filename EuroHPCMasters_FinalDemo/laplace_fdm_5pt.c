@@ -161,42 +161,49 @@ void save_current_solution(float **matrix, int prows, int pcols, MPI_Comm new_co
 
 	if(rank == 0)
 	{
-		counter = 0;
+	    counter = 0;
 
-		j = 0; 					 				//the upper boundary
-		for(i = 0; i <= N ; i++) 				//If there is N divisions, then the number of points is N+1
-		{
-			bndry_vals[counter++] = i * h;
-			bndry_vals[counter++] = j * h;
-			bndry_vals[counter++] = 1.0; 		//All boundary values are 1.0
-		}
+	    // Upper boundary (y = 0)
+	    j = 0;
+	    for(i = 0; i <= N ; i++) 
+	    {
+		double x = i * h;
+		bndry_vals[counter++] = x;
+		bndry_vals[counter++] = j * h;
+		bndry_vals[counter++] = 1+sin(M_PI * x); // Use sine function
+	    }
 
-		j = N;									//Lower boundary
-		for(i = 0; i <= N ; i++) 				//If there is N divisions, then the number of points is N+1
-		{
-			bndry_vals[counter++] = i * h;
-			bndry_vals[counter++] = j * h;
-			bndry_vals[counter++] = 1.0; 		//All boundary values are 1.0
-		}
+	    // Lower boundary (y = 1)
+	    j = N;
+	    for(i = 0; i <= N ; i++) 
+	    {
+		double x = i * h;
+		bndry_vals[counter++] = x;
+		bndry_vals[counter++] = j * h;
+		bndry_vals[counter++] = 1+sin(M_PI * x); // Use sine function
+	    }
 
-		i = 0; 									//Left boundary
-		for(j = 1; j <= N-1 ; j++) 				//If there is N divisions, then the number of points is N+1
-		{
-			bndry_vals[counter++] = i * h;
-			bndry_vals[counter++] = j * h;
-			bndry_vals[counter++] = 1.0; 		//All boundary values are 1.0
-		}
+	    // Left boundary (x = 0)
+	    i = 0;
+	    for(j = 1; j <= N-1 ; j++) 
+	    {
+		double y = j * h;
+		bndry_vals[counter++] = i * h;
+		bndry_vals[counter++] = y;
+		bndry_vals[counter++] = 1+sin(M_PI * y); // Use sine function
+	    }
 
-		i = N; 									//Left boundary
-		for(j = 1; j <= N-1 ; j++) 				//If there is N divisions, then the number of points is N+1
-		{
-			bndry_vals[counter++] = i * h;
-			bndry_vals[counter++] = j * h;
-			bndry_vals[counter++] = 1.0; 		//All boundary values are 1.0
-		}
+	    // Right boundary (x = 1)
+	    i = N;
+	    for(j = 1; j <= N-1 ; j++) 
+	    {
+		double y = j * h;
+		bndry_vals[counter++] = i * h;
+		bndry_vals[counter++] = y;
+		bndry_vals[counter++] = 1+sin(M_PI * y); // Use sine function
+	    }
 
-		
-		MPI_File_write(fh, bndry_vals, 4 * N * 3, MPI_FLOAT, MPI_STATUS_IGNORE);
+	    MPI_File_write(fh, bndry_vals, 4 * N * 3, MPI_FLOAT, MPI_STATUS_IGNORE);
 	}
 
 	MPI_File_close(&fh); 						//Finally close the file
